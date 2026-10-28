@@ -28,3 +28,4 @@ research/
 web/test-results/
 web/playwright-report/
 web/.lighthouseci/
+web/coverage/

@@ -6,6 +6,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 
 // --- transpile imageConvert.ts on the fly (esbuild if present) -------------
 let esbuild;
@@ -19,16 +20,12 @@ try {
 const url = await import("node:url");
 const path = await import("node:path");
 const here = path.dirname(url.fileURLToPath(import.meta.url));
-const out = await esbuild.build({
+const mod = await importBundle(esbuild, {
   entryPoints: [path.join(here, "imageConvert.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
 });
-const code = out.outputFiles[0].text;
-const dataUrl = "data:text/javascript;base64," + Buffer.from(code).toString("base64");
-const mod = await import(dataUrl);
 
 const { isHeicMime, jpegFilename, convertToJpeg, exceedsConvertSizeCap } = mod;
 

@@ -14,6 +14,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 import vm from "node:vm";
 
 // Stub the browser globals opfsSupported() probes. Both are mutable so each case
@@ -34,15 +35,12 @@ try {
 const url = await import("node:url");
 const path = await import("node:path");
 const here = path.dirname(url.fileURLToPath(import.meta.url));
-const out = await esbuild.build({
+({ opfsSupported, opfsSink, opfsDurableLength, opfsSinkWithIdbFallback } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "opfsStage.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
-});
-const dataUrl = "data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64");
-({ opfsSupported, opfsSink, opfsDurableLength, opfsSinkWithIdbFallback } = await import(dataUrl));
+}));
 
 const buf = (s) => new TextEncoder().encode(s).buffer;
 

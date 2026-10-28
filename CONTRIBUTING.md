@@ -78,6 +78,14 @@ node src/lib/warp/roomCode.check.mjs           # room-code sanitize + alphabet v
 
 **If you touch a file in `web/src/lib/warp/`, run its `.check.mjs` — and extend it to cover your change.** These harnesses are the engine's regression net.
 
+To see what the harnesses actually exercise, run them under [c8](https://github.com/bcoe/c8):
+
+```bash
+pnpm --filter @warp/web coverage   # text summary + web/coverage/index.html + lcov.info
+```
+
+Harnesses that transpile TS must load it through `importBundle` (`web/scripts/importBundle.mjs`), not a `data:` URL import — c8 can only map real files with source maps back to the `.ts` lines.
+
 ## Hard constraints (the soul of the project)
 
 These are non-negotiable. A PR that violates one will be asked to change, no matter how nice the feature is — so check here *before* you build.

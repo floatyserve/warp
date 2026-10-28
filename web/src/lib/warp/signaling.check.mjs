@@ -8,6 +8,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 
 // --- stubs ----------------------------------------------------------------
 const scheduled = [];
@@ -42,15 +43,12 @@ try {
 const url = await import("node:url");
 const path = await import("node:path");
 const here = path.dirname(url.fileURLToPath(import.meta.url));
-const out = await esbuild.build({
+({ SignalingClient } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "signaling.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
-});
-const dataUrl = "data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64");
-({ SignalingClient } = await import(dataUrl));
+}));
 
 // --- 1. Once joined (room set), reconnect NEVER gives up ------------------
 {

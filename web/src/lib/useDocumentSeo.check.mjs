@@ -6,16 +6,16 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../scripts/importBundle.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const esbuild = await import("esbuild");
-const out = await esbuild.build({
+const { useDocumentSeo } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "useDocumentSeo.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
   plugins: [
     {
@@ -33,9 +33,6 @@ const out = await esbuild.build({
     },
   ],
 });
-const code = out.outputFiles[0].text;
-const dataUrl = `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`;
-const { useDocumentSeo } = await import(dataUrl);
 
 function makeElement(tagName) {
   const attrs = new Map();

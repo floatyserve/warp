@@ -9,6 +9,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 import path from "node:path";
 import url from "node:url";
 
@@ -22,15 +23,12 @@ try {
   console.error("SKIP: esbuild not available —", e.message);
   process.exit(0);
 }
-const out = await esbuild.build({
+({ LARGE_THRESHOLD, detectFsAccessSupport, isLargeBatch, chooseReceiveStrategy } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "receiveStrategy.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
-});
-const dataUrl = "data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64");
-({ LARGE_THRESHOLD, detectFsAccessSupport, isLargeBatch, chooseReceiveStrategy } = await import(dataUrl));
+}));
 
 const MiB = 1024 * 1024;
 assert.equal(LARGE_THRESHOLD, 256 * MiB, "LARGE_THRESHOLD is the shared 256 MiB line");

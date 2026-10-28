@@ -17,6 +17,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 
 // --- minimal in-memory IndexedDB (string keyPath) -------------------------------
 class FakeRequest {
@@ -131,15 +132,12 @@ try {
 const url = await import("node:url");
 const path = await import("node:path");
 const here = path.dirname(url.fileURLToPath(import.meta.url));
-const out = await esbuild.build({
+({ putRxLedger, readRxLedger, removeRxLedger, gcRxLedger } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "rxLedger.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
-});
-const dataUrl = "data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64");
-({ putRxLedger, readRxLedger, removeRxLedger, gcRxLedger } = await import(dataUrl));
+}));
 
 const ledgerStore = () => db.stores.get("ledger");
 const row = (key, room, extra = {}) => ({

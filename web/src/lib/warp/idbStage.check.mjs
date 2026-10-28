@@ -8,6 +8,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 
 const GB = 1024 * 1024 * 1024;
 
@@ -26,15 +27,12 @@ try {
 const url = await import("node:url");
 const path = await import("node:path");
 const here = path.dirname(url.fileURLToPath(import.meta.url));
-const out = await esbuild.build({
+({ estimateFits, storageFits } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "idbStage.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
-});
-const dataUrl = "data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64");
-({ estimateFits, storageFits } = await import(dataUrl));
+}));
 
 // --- iOS hard memory cap: refuse a multi-GB file even if storage says fine --------
 nav.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15";

@@ -9,6 +9,7 @@
  */
 
 import assert from "node:assert";
+import { importBundle } from "../../../scripts/importBundle.mjs";
 import path from "node:path";
 import url from "node:url";
 
@@ -22,15 +23,12 @@ try {
   console.error("SKIP: esbuild not available —", e.message);
   process.exit(0);
 }
-const out = await esbuild.build({
+({ supportedCodecs, isCompressible, chooseCodec, compressChunk, decompressChunk } = await importBundle(esbuild, {
   entryPoints: [path.join(here, "compress.ts")],
   bundle: true,
   format: "esm",
-  write: false,
   platform: "neutral",
-});
-const dataUrl = "data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64");
-({ supportedCodecs, isCompressible, chooseCodec, compressChunk, decompressChunk } = await import(dataUrl));
+}));
 
 // --- isCompressible: an allowlist, raw when in doubt ------------------------------
 assert.equal(isCompressible("text/plain"), true, "text/plain compresses");

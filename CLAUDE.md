@@ -38,6 +38,7 @@ pnpm dev                              # web on :5173
 pnpm dev:server                       # wrangler dev on :8787
 pnpm --filter @warp/web build         # always lint + typecheck + build before deploy
 pnpm --filter @warp/server test       # signaling e2e
+pnpm --filter @warp/web coverage      # engine harnesses under c8 → web/coverage/
 
 # deploy (Cloudflare) — a stale CLOUDFLARE_API_TOKEN in the env 403s; strip it so
 # wrangler uses the OAuth login (which auto-refreshes): prefix with `env -u CLOUDFLARE_API_TOKEN`

@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "src": ["src/lib"],
+  "include": ["**/src/lib/**/*.ts"],
+  "exclude": ["**/*.check.mjs", "**/*.d.ts"],
+  "exclude-after-remap": true,
+  "reporter": ["text", "html", "lcov"],
+  "reports-dir": "coverage"
+}
